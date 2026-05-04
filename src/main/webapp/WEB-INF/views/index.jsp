@@ -118,6 +118,8 @@
 					
 				</tbody>
 			</table>
+			
+			Export: <a href="excel">Excel</a><a href="">pdf</a>
 		</div>
 		</div>
 		

@@ -13,6 +13,8 @@ import com.entity.CitizenPlan;
 import com.entity.SearchRequest;
 import com.service.ReportService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Controller
 public class ReportController {
 	@Autowired
@@ -37,6 +39,14 @@ public class ReportController {
 		model.addAttribute("plans", searchCitizens);
 		
 		return "index";
+	}
+	
+	@GetMapping("/excel")
+	public void exportExcel(HttpServletResponse response) throws Exception {
+		
+		response.setContentType("application/octet-stream");
+		response.addHeader("Content-Disposition", "attachment;fileName=plans.xls");
+		reportService.exportExcel(response);
 	}
 
 }
