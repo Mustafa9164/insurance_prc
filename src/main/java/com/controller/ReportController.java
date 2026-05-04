@@ -48,5 +48,13 @@ public class ReportController {
 		response.addHeader("Content-Disposition", "attachment;fileName=plans.xls");
 		reportService.exportExcel(response);
 	}
+	
+	@GetMapping("/pdf")
+	public void exportPdf(HttpServletResponse response) throws Exception {
+		
+		response.setContentType("application/pdf");
+		response.addHeader("Content-Disposition", "attachment;fileName=plans.pdf");
+		reportService.exportPdf(response);
+	}
 
 }

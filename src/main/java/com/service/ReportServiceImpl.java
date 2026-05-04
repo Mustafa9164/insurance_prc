@@ -6,7 +6,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,13 @@ import org.springframework.stereotype.Service;
 import com.entity.CitizenPlan;
 import com.entity.SearchRequest;
 import com.repo.ReportRepository;
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -102,8 +108,39 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public boolean exportPdf(HttpServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
+		Document document=new Document(PageSize.A4);
+		PdfWriter.getInstance(document, response.getOutputStream());
+		document.open();
+		
+		Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+		font.setSize(18);
+		
+		
+		Paragraph p=new Paragraph("Citizens Info",font);
+		p.setAlignment(Paragraph.ALIGN_CENTER);
+
+		document.add(p);
+		PdfPTable table = new PdfPTable(6);
+		table.addCell("ID");
+		table.addCell("Citizen Name");
+		table.addCell("Plan Name");
+		table.addCell("Plan Status");
+		table.addCell("Start Date");
+		table.addCell("End date");
+		
+		List<CitizenPlan> plans = reportRepository.findAll();
+		for (CitizenPlan plan : plans) {
+			table.addCell(String.valueOf(plan.getCitizenId()));
+			table.addCell(plan.getCitizenName());
+			table.addCell(plan.getPlanName());
+			table.addCell(plan.getPlanStatus());
+			table.addCell(plan.getPlanStartDate()+"");
+			table.addCell(plan.getPlanEndDate()+" ");
+		}
+		
+		document.add(table);
+		document.close();
+		return true;
+		}
 
 }
