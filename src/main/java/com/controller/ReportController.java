@@ -19,39 +19,43 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ReportController {
 	@Autowired
 	private ReportService reportService;
-	
+
 	@GetMapping("/")
-	public String loadFormPage(CitizenPlan citizenPlan,Model model) {
+	public String loadFormPage(CitizenPlan citizenPlan, Model model) {
 
-	    model.addAttribute("searchRequest", new SearchRequest());
-	    model.addAttribute("planNames", reportService.getPlanNames());
-	    model.addAttribute("planStatuses", reportService.getPlanStatus());
+		model.addAttribute("searchRequest", new SearchRequest());
+		init(model);
 
-	    return "index";  
-	}
-	
-	@PostMapping("/search")
-	public String handleSearch(@ModelAttribute("searchRequest") SearchRequest request,Model model) {
-		
-		System.out.println(request);
-		List<CitizenPlan> searchCitizens = reportService.searchCitizens(request);
-		
-		model.addAttribute("plans", searchCitizens);
-		
 		return "index";
 	}
-	
+
+	private void init(Model model) {
+		model.addAttribute("planNames", reportService.getPlanNames());
+		model.addAttribute("planStatuses", reportService.getPlanStatus());
+	}
+
+	@PostMapping("/search")
+	public String handleSearch(@ModelAttribute("searchRequest") SearchRequest request, Model model) {
+
+		System.out.println(request);
+		List<CitizenPlan> searchCitizens = reportService.searchCitizens(request);
+
+		model.addAttribute("plans", searchCitizens);
+		init(model);
+		return "index";
+	}
+
 	@GetMapping("/excel")
 	public void exportExcel(HttpServletResponse response) throws Exception {
-		
+
 		response.setContentType("application/octet-stream");
 		response.addHeader("Content-Disposition", "attachment;fileName=plans.xls");
 		reportService.exportExcel(response);
 	}
-	
+
 	@GetMapping("/pdf")
 	public void exportPdf(HttpServletResponse response) throws Exception {
-		
+
 		response.setContentType("application/pdf");
 		response.addHeader("Content-Disposition", "attachment;fileName=plans.pdf");
 		reportService.exportPdf(response);
